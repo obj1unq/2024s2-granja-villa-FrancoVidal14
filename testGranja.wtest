@@ -1,9 +1,69 @@
-import example.pepita
+import posiciones.*
+import cultivos.*
+import hector.*
+import wollok.game.*
+import granja.*
 
-describe "group of tests for pepita" {
+describe "Movimiento de Hector" {
+  test "Intento de escaparse por el borde inferior" {
+    assert.equals(hector.position(), game.origin())
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
+    assert.throwsExceptionWithMessage("No puedo moverme fuera del tablero", {hector.mover(abajo)})    
+
+    assert.equals(hector.position(), game.origin())
   }
 
+    test "Intento de escaparse por el borde derecho" {
+    hector.position(game.at(9,0))
+
+    assert.throwsExceptionWithMessage("No puedo moverme fuera del tablero", {hector.mover(derecha)})    
+
+    assert.equals(hector.position(), game.at(9,0))
+  }
+}
+
+describe "Cultivo, regar y venta de cultivos" {
+
+test "Fallo al regar ya que no hay plantas"{
+    assert.throwsExceptionWithMessage("No hay ninguna planta para regar aquí", { hector.regar() })
+
+}
+
+test "Fallo al querer cosechar un trigo inmaduro" {
+    hector.cultivar(new Trigo())
+    hector.regar()
+    
+    assert.throwsExceptionWithMessage("no tengo nada para cosechar", { hector.cosechar() })
+  
+}
+
+test "Venta de tomacos y trigos" {
+    hector.cultivar(new Trigo())
+    hector.cultivar(new Trigo())
+    hector.cultivar(new Tomaco())
+    hector.cultivar(new Tomaco())
+
+    hector.regar()
+    hector.regar()
+    hector.regar()
+
+    hector.cosechar()
+    
+    hector.mover(arriba)
+    hector.cosechar()
+    hector.vender()
+    assert.equals(560, hector.guita())
+}
+
+test "Venta de maiz"{
+    hector.cultivar(new Maiz())
+    hector.cultivar(new Maiz())
+    hector.cultivar(new Maiz())
+
+    hector.regar()
+    
+    hector.cosechar()
+    hector.vender()
+    assert.equals(450, hector.guita())
+}
 }
